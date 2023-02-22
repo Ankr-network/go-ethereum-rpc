@@ -60,7 +60,7 @@ type callback struct {
 func (r *serviceRegistry) registerName(name string, rcvr interface{}) error {
 	rcvrVal := reflect.ValueOf(rcvr)
 	if name == "" {
-		return fmt.Errorf("no service name for type %s", rcvrVal.Type().String())
+		name = "default"
 	}
 	callbacks := suitableCallbacks(rcvrVal)
 	if len(callbacks) == 0 {
@@ -94,6 +94,10 @@ func (r *serviceRegistry) registerName(name string, rcvr interface{}) error {
 // callback returns the callback corresponding to the given RPC method name.
 func (r *serviceRegistry) callback(method string) *callback {
 	elem := strings.SplitN(method, serviceMethodSeparator, 2)
+	if len(elem) == 1 {
+		// commands without namespace specified go to the default namespace
+		elem = append([]string{defaultNamespace}, elem[0])
+	}
 	if len(elem) != 2 {
 		return nil
 	}

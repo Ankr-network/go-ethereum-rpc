@@ -31,6 +31,7 @@ import (
 
 const (
 	vsn                      = "2.0"
+	defaultNamespace         = "default"
 	serviceMethodSeparator   = "_"
 	subscribeMethodSuffix    = "_subscribe"
 	unsubscribeMethodSuffix  = "_unsubscribe"
@@ -87,6 +88,9 @@ func (msg *jsonrpcMessage) isUnsubscribe() bool {
 
 func (msg *jsonrpcMessage) namespace() string {
 	elem := strings.SplitN(msg.Method, serviceMethodSeparator, 2)
+	if len(elem) == 1 {
+		return defaultNamespace
+	}
 	return elem[0]
 }
 
